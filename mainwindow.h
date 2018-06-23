@@ -3,11 +3,7 @@
 
 #include <QMainWindow>
 #include <QtCharts>
-#include <QSqlDatabase>
-#include <QDebug>
-#include <QSqlError>
-#include <QSqlQuery>
-#include <scrape.h>
+#include <database.h>
 
 using namespace QtCharts;
 
@@ -22,14 +18,19 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-    SetAxis(QLineSeries *series);
-    WeatherData *GetUpdate();
-    ConnectDb();
-    InsertToDb(WeatherData* head);
+    void SetAxis(QLineSeries* series);
+    void SetSeries();
+
+private slots:
+    void on_cbDates_currentTextChanged(const QString &arg1);
+
+    void on_hsDays_valueChanged(int value);
 
 private:
     Ui::MainWindow *ui;
-    QSqlDatabase db;
+    QValueAxis *xAxis;
+    QValueAxis *yAxis;
+    QLineSeries *series;
 };
 
 #endif // MAINWINDOW_H

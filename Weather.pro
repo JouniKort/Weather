@@ -30,11 +30,15 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     scrape.cpp \
+    dates.cpp \
+    database.cpp
 
 HEADERS += \
     mainwindow.h \
     scrape.h \
     models.h \
+    dates.h \
+    database.h
 
 FORMS += \
         mainwindow.ui

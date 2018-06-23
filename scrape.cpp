@@ -5,17 +5,16 @@ Scrape::Scrape()
 
 }
 
-WeatherData* Scrape::LoadHtml(QString url){
+WeatherData* Scrape::LoadHtml(QString url, char target_date[8]){
     QNetworkAccessManager manager;
     QNetworkReply *response = manager.get(QNetworkRequest(QUrl(url)));
     QEventLoop event;
     QObject::connect(response, SIGNAL(finished()), &event, SLOT(quit()));
     event.exec();
 
-    WeatherData* NodeCollection = InitializeStruct();
-    NodeCollection = Parse(response->readAll().toStdString(), NodeCollection);
-    NodeCollection = SetDateTimes(NodeCollection);
-    return NodeCollection;
+    WeatherData* head = InitializeStruct();
+    head = Parse(response->readAll().toStdString(), head, target_date);
+    return head;
 }
 
 WeatherData* Scrape::InitializeStruct(){
@@ -29,15 +28,12 @@ WeatherData* Scrape::InitializeStruct(){
     return head;
 }
 
-WeatherData* Scrape::Parse(std::string source,WeatherData* head){
+WeatherData* Scrape::Parse(std::string source,WeatherData* head, char target_date[8]){
     const int length = 11;
 
     static char buffer[length];
     static char bufferTemp[3];
-    static char bufferTime[3];
-    static char* pBottom = buffer;
-    static char* pFill = buffer;
-    static char* pTop = pBottom + length - 1;
+    static char bufferTime[2];
 
     const char match1[length] = "class=\"c4\"";
     const char match2[length] = "class=\"c0\"";
@@ -75,20 +71,23 @@ WeatherData* Scrape::Parse(std::string source,WeatherData* head){
             }
         }else if(readTime){
             bufferTime[0] = bufferTime[1];
-            bufferTime[1] = bufferTime[2];
-            bufferTime[2] = c;
+            bufferTime[1] = c;
             if(bufferTime[0] != '\0'){
                 current->time = std::stoi(std::string(bufferTime));
 
                 Found++;
-                readTime = false;
                 Time = false;
+                readTime = false;
                 memset(bufferTime,'\0',sizeof(bufferTime));
             }
         }
 
         if(Found == 2){
             Found = 0;
+
+            for(int i = 0; i < 8; i++){
+                current->date[i] = target_date[i];
+            }
 
             current->pNext = (WeatherData*)malloc(sizeof(WeatherData));
             current->pNext->pNext = NULL;
@@ -107,36 +106,4 @@ WeatherData* Scrape::Parse(std::string source,WeatherData* head){
     }
 
     return head;
-}
-
-WeatherData* Scrape::SetDateTimes(WeatherData *head){
-    char* date = CurrentDate();
-
-    WeatherData *current = head;
-    while(current->pNext != NULL){
-        for(int i = 0; i < 8; i++){
-            current->date[i] = date[i];
-        }
-        current = current->pNext;
-    }
-
-    free(date);
-    return head;
-}
-
-char* Scrape::CurrentDate(){
-    std::time_t t = std::time(0);
-    std::tm* now = std::localtime(&t);
-    std::string date = std::to_string(now->tm_year+1900);
-    if(now->tm_mon < 10){date += std::to_string(0);}
-    date += std::to_string(now->tm_mon);
-    date += std::to_string(now->tm_mday);
-
-    char *date_arr = (char*)malloc(8);
-    memset(date_arr,'\0',8);
-    for(int i = 0; i < 8; i++){
-        date_arr[i] = date[i];
-    }
-
-    return date_arr;
 }
