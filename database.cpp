@@ -39,6 +39,7 @@ void GetUpdate(){
 
         InsertToDb(scrape->LoadHtml(url, date_target),date_current);
     }
+    query.finish();
 
     qDebug() << "Updated";
 }
@@ -54,7 +55,7 @@ void SetDates(QComboBox* cbDates){
 }
 
 QLineSeries* GetSeries(QString forDate, QString addingDate){
-    QSqlQuery query;
+    QSqlQuery query(db);
     query.prepare("SELECT * FROM Weather WHERE AddingDate=? AND ForDate=?");
     query.addBindValue(addingDate);
     query.addBindValue(forDate);
@@ -74,6 +75,7 @@ QLineSeries* GetSeries(QString forDate, QString addingDate){
             series->append(std::stoi(query.value("Hour").toString().toStdString()), std::stoi(query.value("Temperature").toString().toStdString()));
         }
     }
+    query.finish();
 
     return series;
 }

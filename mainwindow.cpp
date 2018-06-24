@@ -8,6 +8,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     this->setStyleSheet("background-color: white;");
 
+    ui->graphicsView->chart()->layout()->setContentsMargins(1,1,1,1);
+    ui->graphicsView->chart()->setBackgroundRoundness(0);
+
     xAxis = new QValueAxis();
     yAxis = new QValueAxis();
     series = new QLineSeries();
