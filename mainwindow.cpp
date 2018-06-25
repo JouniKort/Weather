@@ -6,24 +6,36 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    this->setStyleSheet("background-color: white;");
 
     ui->graphicsView->chart()->layout()->setContentsMargins(1,1,1,1);
-    ui->graphicsView->chart()->setBackgroundRoundness(0);
+    ui->graphicsView->chart()->setBackgroundRoundness(1);
+    ui->graphicsView->chart()->setBackgroundBrush(QBrush(QColor("#232629")));
 
     xAxis = new QValueAxis();
     yAxis = new QValueAxis();
     series = new QLineSeries();
 
-    ConnectDb();
-    GetUpdate();
-    SetDates(ui->cbDates);
+    StartUp();
 }
 
 MainWindow::~MainWindow()
 {
     CloseDb();
     delete ui;
+}
+
+void MainWindow::StartUp(){
+    QSettings sett("Jouni Kortelainen", "Weather");
+    if(sett.contains("Database")){
+        qDebug() << "Database path: " << sett.value("Database").toString();
+        if(QFile(sett.value("Database").toString()).exists()){
+            ConnectDb();
+            GetUpdate();
+            SetDates(ui->cbDates);
+        }
+    }else{
+        qDebug() << "Database path missing";
+    }
 }
 
 void MainWindow::SetAxis(QLineSeries* series){
@@ -33,11 +45,13 @@ void MainWindow::SetAxis(QLineSeries* series){
     xAxis->setRange(0,24);
     xAxis->setTickCount(25);
     xAxis->setLabelFormat("%d");
+    xAxis->setLabelsBrush(QBrush(QColor(255,255,255)));
     ui->graphicsView->chart()->setAxisX(xAxis, series);
 
     yAxis->setRange(0,30);
     yAxis->setTickCount(5);
     yAxis->setLabelFormat("%d");
+    yAxis->setLabelsBrush(QBrush(QColor(255,255,255)));
     ui->graphicsView->chart()->setAxisY(yAxis, series);
 }
 
@@ -67,4 +81,22 @@ void MainWindow::SetSeries(){
     SetAxis(series);
 
     qDebug() << ForDate << "-" << AddingDate;
+}
+
+void MainWindow::on_actionSettings_triggered()
+{
+    settings* set = new settings();
+    QObject::connect(set,SIGNAL(accepted()),this,SLOT(accept()));
+    QObject::connect(set,SIGNAL(rejected()),this,SLOT(reject()));
+
+    int diagCode = set->exec();
+
+    if(diagCode == QDialog::Accepted){
+        QSettings sett("Jouni Kortelainen", "Weather");
+        qDebug() << "Setting database path";
+        sett.setValue("Database",set->GetPath());
+        StartUp();
+    }
+
+    set->deleteLater();
 }

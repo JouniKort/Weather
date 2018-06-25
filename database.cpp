@@ -22,9 +22,9 @@ void GetUpdate(){
     DateOffset(pdate,0);
     char* date_current = DateToString(pdate);
 
-    QString cmd = "SELECT * FROM Weather WHERE AddingDate=" + QString::number(std::stoi(date_current));
     QSqlQuery query(db);
-    query.prepare(cmd);
+    query.prepare("SELECT * FROM Weather WHERE AddingDate=?");
+    query.addBindValue(std::stoi(date_current));
     query.exec();
     if(query.next()){qDebug() << "No updates"; return;}
 

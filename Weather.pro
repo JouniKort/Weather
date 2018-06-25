@@ -31,18 +31,22 @@ SOURCES += \
     mainwindow.cpp \
     scrape.cpp \
     dates.cpp \
-    database.cpp
+    database.cpp \
+    settings.cpp
 
 HEADERS += \
     mainwindow.h \
     scrape.h \
     models.h \
     dates.h \
-    database.h
+    database.h \
+    settings.h
 
 FORMS += \
-        mainwindow.ui
+        mainwindow.ui \
+    settings.ui
 
-DISTFILES +=
+DISTFILES += \
+    style/style.qss
 
 STATECHARTS +=

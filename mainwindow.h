@@ -4,6 +4,8 @@
 #include <QMainWindow>
 #include <QtCharts>
 #include <database.h>
+#include <settings.h>
+#include <QSettings>
 
 using namespace QtCharts;
 
@@ -20,11 +22,12 @@ public:
     ~MainWindow();
     void SetAxis(QLineSeries* series);
     void SetSeries();
+    void StartUp();
 
 private slots:
     void on_cbDates_currentTextChanged(const QString &arg1);
-
     void on_hsDays_valueChanged(int value);
+    void on_actionSettings_triggered();
 
 private:
     Ui::MainWindow *ui;
