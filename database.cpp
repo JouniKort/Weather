@@ -80,6 +80,24 @@ QLineSeries* GetSeries(QString forDate, QString addingDate){
     return series;
 }
 
+AxisMinMax* GetMinMax(QString forDate){
+    AxisMinMax *amm = (AxisMinMax*)malloc(sizeof(AxisMinMax));
+
+    QSqlQuery query(db);
+    query.prepare("SELECT MAX(Temperature) AS max, MIN(Temperature) AS min FROM WEATHER WHERE ForDate=?");
+    query.addBindValue(forDate);
+    query.exec();
+
+    while(query.next()){
+        amm->max = query.value(0).toInt();
+        amm->min = query.value(1).toInt();
+    }
+
+    query.finish();
+
+    return amm;
+}
+
 int ResultSize(QSqlQuery query){
     int initialPos = query.at();
     int pos = 0;

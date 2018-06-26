@@ -17,6 +17,7 @@ QLineSeries* GetSeries(QString forDate, QString addingDate);
 void ConnectDb();
 void CloseDb();
 void InsertToDb(WeatherData* head, char date_current[]);
+AxisMinMax* GetMinMax(QString forDate);
 int ResultSize(QSqlQuery query);
 
 #endif // DATABASE_H

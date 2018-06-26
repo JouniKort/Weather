@@ -14,4 +14,9 @@ struct DateData{
     int d;
 };
 
+struct AxisMinMax{
+    int min;
+    int max;
+};
+
 #endif // MODELS_H

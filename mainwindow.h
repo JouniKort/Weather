@@ -20,7 +20,7 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-    void SetAxis(QLineSeries* series);
+    void SetAxis();
     void SetSeries();
     void StartUp();
 

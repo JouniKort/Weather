@@ -38,9 +38,12 @@ void MainWindow::StartUp(){
     }
 }
 
-void MainWindow::SetAxis(QLineSeries* series){
+void MainWindow::SetAxis(){
     ui->graphicsView->chart()->axes().removeAll(yAxis);
     ui->graphicsView->chart()->axes().removeAll(xAxis);
+
+    QString forDate = ui->cbDates->currentText();
+    AxisMinMax *amm = GetMinMax(forDate);
 
     xAxis->setRange(0,24);
     xAxis->setTickCount(25);
@@ -48,16 +51,19 @@ void MainWindow::SetAxis(QLineSeries* series){
     xAxis->setLabelsBrush(QBrush(QColor(255,255,255)));
     ui->graphicsView->chart()->setAxisX(xAxis, series);
 
-    yAxis->setRange(0,30);
+    yAxis->setRange(amm->min, amm->max);
     yAxis->setTickCount(5);
     yAxis->setLabelFormat("%d");
     yAxis->setLabelsBrush(QBrush(QColor(255,255,255)));
     ui->graphicsView->chart()->setAxisY(yAxis, series);
+
+    free(amm);
 }
 
 void MainWindow::on_cbDates_currentTextChanged(const QString &arg1)
 {
     SetSeries();
+    SetAxis();
 }
 
 void MainWindow::on_hsDays_valueChanged(int value)
@@ -77,8 +83,6 @@ void MainWindow::SetSeries(){
 
     ui->graphicsView->chart()->addSeries(series);
     ui->graphicsView->chart()->legend()->markers(series)[0]->setVisible(false);
-
-    SetAxis(series);
 
     qDebug() << ForDate << "-" << AddingDate;
 }
